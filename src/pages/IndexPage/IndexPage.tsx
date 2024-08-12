@@ -1,18 +1,31 @@
+import type { PointerEvent } from 'react'
 import { useEffect, useState } from 'react'
 import styles from './indexPage.module.scss'
+
+type Tap = {
+	id: number
+	x: number
+	y: number
+}
 
 export function IndexPage() {
 	const [score, setScore] = useState(1000000)
 	const [energy, setEnergy] = useState(100)
 	const [autoMode, setAutoMode] = useState(false)
+	const [taps, setTaps] = useState<Tap[]>([])
 
-	function handleClick() {
+	function handleClick(e: PointerEvent<HTMLButtonElement>) {
 		if (energy < 1) {
 			return
 		}
 
+		setTaps((t) => [...t, { id: score, x: e.clientX, y: e.clientY }])
 		setScore((s) => s + 1)
 		setEnergy((e) => e - 1)
+	}
+
+	function removeTap(id: number) {
+		setTaps((taps) => taps.filter((t) => t.id !== id))
 	}
 
 	useEffect(() => {
@@ -48,7 +61,7 @@ export function IndexPage() {
 				{Intl.NumberFormat().format(score)}
 			</header>
 			<main className={styles.main}>
-				<button onClick={handleClick} type="button">
+				<button onPointerDown={handleClick} type="button">
 					Это фрукт. Не судите его, он старается в меру своих сил.
 				</button>
 			</main>
@@ -66,6 +79,39 @@ export function IndexPage() {
 					</button>
 				</section>
 			</footer>
+
+			<div className={styles.tapContainer}>
+				{taps.map((tap) => (
+					<Tap tap={tap} removeTap={removeTap} key={tap.id} />
+				))}
+			</div>
+		</div>
+	)
+}
+
+function Tap(props: {
+	tap: Tap
+	removeTap: (id: number) => void
+}) {
+	useEffect(() => {
+		const timeout = setTimeout(() => {
+			props.removeTap(props.tap.id)
+		}, 1000)
+
+		return () => {
+			clearTimeout(timeout)
+		}
+	}, [props.tap.id, props.removeTap])
+
+	return (
+		<div
+			className={styles.tap}
+			style={{
+				top: props.tap.y,
+				left: props.tap.x,
+			}}
+		>
+			+1
 		</div>
 	)
 }

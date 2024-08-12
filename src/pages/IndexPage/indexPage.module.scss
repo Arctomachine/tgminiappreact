@@ -1,7 +1,11 @@
 .container {
 	display: grid;
 	grid-template-rows: auto 1fr auto;
-	height: 100vh;
+	position: relative;
+	height: 100dvh;
+	background-color: midnightblue;
+	color: white;
+	font-family: system-ui, sans-serif;
 }
 
 .header, .main, .footer {
@@ -20,11 +24,15 @@
 	button {
 		width: 15rem;
 		height: 15rem;
+		transition: transform 0.25s ease-out;
+
+		&:active {
+			transform: scaleX(1.1) scaleY(0.9);
+		}
 	}
 }
 
 .footer {
-	display: flex;
 	justify-content: space-around;
 }
 
@@ -48,5 +56,35 @@
 	&.off {
 		background-color: red;
 		box-shadow: 0 0 10px 0 red;
+	}
+}
+
+.tap {
+	position: absolute;
+	pointer-events: none;
+	font-size: 2rem;
+	mix-blend-mode: difference;
+	animation: tap 1s ease-out forwards;
+	transform: translateX(-50%) translateY(-50%);
+}
+
+.tapContainer {
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	pointer-events: none;
+}
+
+@keyframes tap {
+	from {
+		margin-top: 0;
+		opacity: 1;
+	}
+
+	to {
+		margin-top: -2em;
+		opacity: 0;
 	}
 }
