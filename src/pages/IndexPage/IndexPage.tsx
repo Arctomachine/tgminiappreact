@@ -15,6 +15,8 @@ export function IndexPage() {
 	const [userId] = useState<number | undefined>(initData?.user?.id)
 	const [score, setScore] = useState<number | undefined>(undefined)
 	const [energy, setEnergy] = useState<number | undefined>(undefined)
+	const [webSocketCoins, setWebSocketCoins] = useState<WebSocket | null>(null)
+	const [webSocketEnergy, setWebSocketEnergy] = useState<WebSocket | null>(null)
 
 	function updateScore(score: number) {
 		setScore(score)
@@ -38,7 +40,70 @@ export function IndexPage() {
 		}
 
 		getData()
-	}, [])
+
+		const socketCoins = new WebSocket(
+			`ws://localhost:8002/ws/coins_gain/${userId}/`,
+		)
+		socketCoins.onopen = () => {
+			setWebSocketCoins(socketCoins)
+		}
+		socketCoins.onmessage = (e) => {
+			console.log(e.data)
+		}
+		socketCoins.onerror = (e) => {
+			console.log(e)
+		}
+
+		const socketEnergy = new WebSocket(
+			`ws://localhost:8002/ws/energy_gain/${userId}/`,
+		)
+		socketEnergy.onopen = () => {
+			setWebSocketEnergy(socketEnergy)
+		}
+		socketEnergy.onmessage = (e) => {
+			console.log(e.data)
+		}
+		socketEnergy.onerror = (e) => {
+			console.log(e)
+		}
+
+		return () => {
+			socketCoins.close()
+			socketEnergy.close()
+		}
+	}, [userId])
+
+	useEffect(() => {
+		const reportTimeout = setTimeout(() => {
+			if (
+				webSocketCoins &&
+				webSocketCoins.readyState === WebSocket.OPEN &&
+				score !== undefined
+			) {
+				webSocketCoins.send(JSON.stringify({ coins: score.toString() }))
+			}
+		}, 500)
+
+		return () => {
+			clearInterval(reportTimeout)
+		}
+	}, [webSocketCoins, score])
+
+	useEffect(() => {
+		const reportTimeout = setTimeout(() => {
+			if (
+				webSocketEnergy &&
+				webSocketEnergy.readyState === WebSocket.OPEN &&
+				energy !== undefined
+			) {
+				webSocketEnergy.send(JSON.stringify({ energy: energy.toString() }))
+			}
+		}, 500)
+
+		return () => {
+			clearInterval(reportTimeout)
+		}
+	}, [webSocketEnergy, energy])
 
 	if (score === undefined || energy === undefined) {
 		return null
