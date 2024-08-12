@@ -1,40 +1,71 @@
-import { Section, Cell, Image, List } from '@telegram-apps/telegram-ui';
-import type { FC } from 'react';
+import { useEffect, useState } from 'react'
+import styles from './indexPage.module.scss'
 
-import { Link } from '@/components/Link/Link.tsx';
+export function IndexPage() {
+	const [score, setScore] = useState(1000000)
+	const [energy, setEnergy] = useState(100)
+	const [autoMode, setAutoMode] = useState(false)
 
-import tonSvg from './ton.svg';
+	function handleClick() {
+		if (energy < 1) {
+			return
+		}
 
-export const IndexPage: FC = () => {
-  return (
-    <List>
-      <Section
-        header='Features'
-        footer='You can use these pages to learn more about features, provided by Telegram Mini Apps and other useful projects'
-      >
-        <Link to='/ton-connect'>
-          <Cell
-            before={<Image src={tonSvg} style={{ backgroundColor: '#007AFF' }}/>}
-            subtitle='Connect your TON wallet'
-          >
-            TON Connect
-          </Cell>
-        </Link>
-      </Section>
-      <Section
-        header='Application Launch Data'
-        footer='These pages help developer to learn more about current launch information'
-      >
-        <Link to='/init-data'>
-          <Cell subtitle='User data, chat information, technical data'>Init Data</Cell>
-        </Link>
-        <Link to='/launch-params'>
-          <Cell subtitle='Platform identifier, Mini Apps version, etc.'>Launch Parameters</Cell>
-        </Link>
-        <Link to='/theme-params'>
-          <Cell subtitle='Telegram application palette information'>Theme Parameters</Cell>
-        </Link>
-      </Section>
-    </List>
-  );
-};
+		setScore((s) => s + 1)
+		setEnergy((e) => e - 1)
+	}
+
+	useEffect(() => {
+		const energyInterval = setInterval(() => {
+			if (energy > 100) {
+				setEnergy(100)
+			}
+
+			if (energy === 100) {
+				return
+			}
+
+			setEnergy((e) => Math.min(e + 1, 100))
+		}, 1000)
+
+		const autoInterval = setInterval(() => {
+			if (!autoMode) {
+				return
+			}
+
+			setScore((s) => s + 1)
+		}, 1000)
+
+		return () => {
+			clearInterval(energyInterval)
+			clearInterval(autoInterval)
+		}
+	}, [energy, autoMode])
+
+	return (
+		<div className={styles.container}>
+			<header className={styles.header}>
+				{Intl.NumberFormat().format(score)}
+			</header>
+			<main className={styles.main}>
+				<button onClick={handleClick} type="button">
+					Это фрукт. Не судите его, он старается в меру своих сил.
+				</button>
+			</main>
+			<footer className={styles.footer}>
+				<section>Энергия: {energy}</section>
+				<section className={styles.auto}>
+					<div
+						className={[
+							styles.indicator,
+							autoMode ? styles.on : styles.off,
+						].join(' ')}
+					/>
+					<button onClick={() => setAutoMode((a) => !a)} type="button">
+						Авто режим
+					</button>
+				</section>
+			</footer>
+		</div>
+	)
+}
