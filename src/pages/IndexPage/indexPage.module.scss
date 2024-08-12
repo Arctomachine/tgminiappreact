@@ -8,7 +8,7 @@
 	font-family: system-ui, sans-serif;
 }
 
-.header, .main, .footer {
+.header, .main {
 	padding: 1rem;
 	display: flex;
 	justify-content: center;
@@ -33,7 +33,10 @@
 }
 
 .footer {
-	justify-content: space-around;
+	display: grid;
+	grid-template-columns: 1fr auto;
+	padding: 1rem;
+	gap: 1.25rem;
 }
 
 .auto {
@@ -75,6 +78,33 @@
 	right: 0;
 	bottom: 0;
 	pointer-events: none;
+}
+
+.energy {
+	padding: 0.1rem;
+	background-color: darkslategray;
+	position: relative;
+	display: flex;
+	justify-content: center;
+	font-weight: bold;
+	font-size: 1.2em;
+	overflow: hidden;
+
+	div {
+		transition: width 0.25s ease-in-out;
+		position: absolute;
+		top: 0;
+		left: 0;
+		bottom: 0;
+		background-color: goldenrod;
+		box-shadow: 0 0 0.75rem 0 goldenrod;
+	}
+
+	span {
+		position: relative;
+		mix-blend-mode: difference;
+		z-index: 2;
+	}
 }
 
 @keyframes tap {

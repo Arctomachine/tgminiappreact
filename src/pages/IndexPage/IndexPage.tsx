@@ -66,7 +66,9 @@ export function IndexPage() {
 				</button>
 			</main>
 			<footer className={styles.footer}>
-				<section>Энергия: {energy}</section>
+				<section>
+					<Energy energy={energy} />
+				</section>
 				<section className={styles.auto}>
 					<div
 						className={[
@@ -85,6 +87,15 @@ export function IndexPage() {
 					<Tap tap={tap} removeTap={removeTap} key={tap.id} />
 				))}
 			</div>
+		</div>
+	)
+}
+
+function Energy(props: { energy: number }) {
+	return (
+		<div className={styles.energy}>
+			<span>{props.energy}</span>
+			<div style={{ width: `${props.energy}%` }} />
 		</div>
 	)
 }
