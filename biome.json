@@ -11,7 +11,7 @@
 	},
 	"files": {
 		"include": [
-			"eslintrc.cjs",
+			".eslintrc.cjs",
 			"package.json",
 			"tsconfig.json",
 			"vite.config.ts",
